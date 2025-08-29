@@ -1,0 +1,8 @@
+version: "3.9"
+services:
+  dashboard-api:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - .secrets/bigquery/service-account.json:/secrets/bigquery/service-account.json:ro
