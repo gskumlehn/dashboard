@@ -41,15 +41,15 @@ def add_brand_to_group(group_id):
 
 @app.route("/dashboard-group/<group_id>/brands", methods=["GET"])
 def list_brands_in_group(group_id):
-    query = """
-        SELECT b.* 
-        FROM `dashboard.dashboard_group_brand` gb
-        JOIN `dashboard.brand` b ON gb.brand_id = b.brand_id
-        WHERE gb.group_id = @group_id
+    query = f"""
+        SELECT b.*
+        FROM `{database.DATASET}.brand` b
+        JOIN `{database.DATASET}.dashboard_group_brand` gb
+          ON b.brand_id = gb.brand_id
+        WHERE gb.group_id = '{group_id}'
     """
-    from google.cloud import bigquery
-    params = [bigquery.ScalarQueryParameter("group_id", "STRING", group_id)]
-    rows = database.query(query, params)
+    rows = database.query(query)
+
     return jsonify(rows)
 
 
