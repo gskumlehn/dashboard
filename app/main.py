@@ -5,7 +5,17 @@ from flask_cors import CORS
 from uuid import uuid4
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "https://kxkplnwemiprukblxuul.lovableproject.com"}})
+CORS(app, resources={
+    r"/*": {
+        "origins": [
+            "https://kxkplnwemiprukblxuul.lovableproject.com",  # Domínio publicado
+            "https://*.sandbox.lovable.dev"                     # Domínios sandbox
+        ],        "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization", "apikey", "x-client-info"],
+        "supports_credentials": False  # Sem autenticação por credenciais
+    }
+})
+
 
 # ---------------- DASHBOARD CONTROLLER ---------------- #
 @app.route("/dashboard-full", methods=["POST"])
