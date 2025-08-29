@@ -117,7 +117,7 @@ def sync_posts(network, handle):
     data = request.json
     start_date = data["start_date"]
     end_date = data["end_date"]
-    result = social_posts.fetch_and_save_posts(handle, network, start_date, end_date)
+    result = social_posts.save_posts(network, handle, start_date, end_date)
     return jsonify(result)
 
 
