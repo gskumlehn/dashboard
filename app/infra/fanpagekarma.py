@@ -2,7 +2,7 @@ import requests
 import os
 
 BASE_URL = "http://app.fanpagekarma.com/api/v1"
-TOKEN = os.getenv("FANPAGEKARMA_TOKEN")   # ⬅️ agora vem do ENV
+TOKEN = os.getenv("FANPAGEKARMA_TOKEN")
 
 def get_posts(network, handle, start_date, end_date):
     params = {"token": TOKEN, "period": f"{start_date}_{end_date}"}
