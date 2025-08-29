@@ -4,7 +4,7 @@ from app.infra import database
 from flask_cors import CORS
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})  # ou restrinja ao domínio do Lovable
+CORS(app, resources={r"/*": {"origins": "https://kxkplnwemiprukblxuul.lovableproject.com"}})
 
 # ---------------- DASHBOARD CONTROLLER ---------------- #
 @app.route("/dashboard-group", methods=["POST"])
