@@ -20,6 +20,53 @@ def create_dashboard_group():
     database.load_json("dashboard_group", [row])
     return jsonify({"status": "created", "group_id": row["group_id"]}), 201
 
+@app.route("/dashboard-full", methods=["POST"])
+def create_dashboard_full():
+    from uuid import uuid4
+
+    data = request.json
+    group_id = str(uuid4())
+
+    # cria o grupo
+    group_row = {
+        "group_id": group_id,
+        "name": data["name"],
+        "description": data.get("description"),
+        "created_at": None
+    }
+    database.load_json("dashboard_group", [group_row])
+
+    brand_ids = []
+
+    for b in data.get("brands", []):
+        brand_id = str(uuid4())
+        brand_row = {
+            "brand_id": brand_id,
+            "name": b["name"],
+            "instagram_handle": b.get("instagram_handle"),
+            "tiktok_handle": b.get("tiktok_handle"),
+            "twitter_handle": b.get("twitter_handle"),
+            "facebook_handle": b.get("facebook_handle"),
+            "youtube_handle": b.get("youtube_handle"),
+            "created_at": None
+        }
+
+        database.load_json("brand", [brand_row])
+        brand_ids.append(brand_id)
+
+        assoc_row = {
+            "group_id": group_id,
+            "brand_id": brand_id,
+            "added_at": None
+        }
+        database.load_json("dashboard_group_brand", [assoc_row])
+
+    return jsonify({
+        "status": "created",
+        "group_id": group_id,
+        "brands": brand_ids
+    }), 201
+
 
 @app.route("/dashboard-group", methods=["GET"])
 def list_dashboard_groups():
