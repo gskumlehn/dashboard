@@ -1,3 +1,5 @@
 .idea
 .env
 run.txt
+/secrets/bigquery/service-account.json
+/secrets/ads/google-ads.yaml
