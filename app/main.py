@@ -8,14 +8,13 @@ app = Flask(__name__)
 CORS(app, resources={
     r"/*": {
         "origins": [
-            "https://kxkplnwemiprukblxuul.lovableproject.com",  # Domínio publicado
-            "https://*.sandbox.lovable.dev"                     # Domínios sandbox
+            "https://kxkplnwemiprukblxuul.lovableproject.com",
+            "https://*.sandbox.lovable.dev"
         ],        "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization", "apikey", "x-client-info"],
-        "supports_credentials": False  # Sem autenticação por credenciais
+        "supports_credentials": False
     }
 })
-
 
 # ---------------- DASHBOARD CONTROLLER ---------------- #
 @app.route("/dashboard-full", methods=["POST"])
@@ -91,6 +90,30 @@ def list_dashboards_full():
         "total_count": total_count,
         "dashboards": [dict(r) for r in rows]
     })
+
+@app.route("/dashboard-full/<group_id>", methods=["GET"])
+def get_dashboard_full(group_id):
+    group_sql = f"""
+        SELECT *
+        FROM `{database.DATASET}.dashboard_group`
+        WHERE group_id = '{group_id}'
+    """
+    groups = database.query(group_sql)
+    if not groups:
+        return jsonify({"error": "Dashboard group não encontrado"}), 404
+
+    group = dict(groups[0])
+
+    brands_sql = f"""
+        SELECT *
+        FROM `{database.DATASET}.brand`
+        WHERE group_id = '{group_id}'
+    """
+    brands = database.query(brands_sql)
+
+    group["brands"] = [dict(b) for b in brands]
+
+    return jsonify(group)
 
 @app.route("/dashboard-full/<group_id>", methods=["DELETE"])
 def delete_dashboard_full(group_id):
