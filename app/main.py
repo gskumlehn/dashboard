@@ -131,6 +131,24 @@ def delete_dashboard_full(group_id):
 
     return jsonify({"status": "deleted", "group_id": group_id}), 200
 
+@app.route("/dashboard-full/<group_id>/brand", methods=["POST"])
+def add_brand_to_group(group_id):
+    data = request.json
+
+    brand_row = {
+        "brand_id": str(uuid4()),
+        "group_id": group_id,
+        "name": data["name"],
+        "instagram_handle": data.get("instagram_handle"),
+        "tiktok_handle": data.get("tiktok_handle"),
+        "twitter_handle": data.get("twitter_handle"),
+        "facebook_handle": data.get("facebook_handle"),
+        "youtube_handle": data.get("youtube_handle"),
+    }
+
+    database.load_json("brand", [brand_row])
+    return jsonify({"status": "brand created", "brand_id": brand_row["brand_id"]}), 201
+
 @app.route("/dashboard-full/<group_id>/description", methods=["PUT"])
 def update_dashboard_description(group_id):
     data = request.json
@@ -155,24 +173,6 @@ def delete_brand(brand_id):
     database.exec(sql)
     return jsonify({"status": "brand deleted", "brand_id": brand_id}), 200
 
-@app.route("/dashboard-full/<group_id>/brand", methods=["POST"])
-def add_brand_to_group(group_id):
-    data = request.json
-
-    brand_row = {
-        "brand_id": str(uuid4()),
-        "group_id": group_id,
-        "name": data["name"],
-        "instagram_handle": data.get("instagram_handle"),
-        "tiktok_handle": data.get("tiktok_handle"),
-        "twitter_handle": data.get("twitter_handle"),
-        "facebook_handle": data.get("facebook_handle"),
-        "youtube_handle": data.get("youtube_handle"),
-    }
-
-    database.load_json("brand", [brand_row])
-    return jsonify({"status": "brand created", "brand_id": brand_row["brand_id"]}), 201
-
 @app.route("/brand/<brand_id>/handles", methods=["PUT"])
 def update_brand_handles(brand_id):
     data = request.json
@@ -180,7 +180,11 @@ def update_brand_handles(brand_id):
     set_clauses = []
     for field in ["instagram_handle", "tiktok_handle", "twitter_handle", "facebook_handle", "youtube_handle"]:
         if field in data:
-            set_clauses.append(f"{field} = '{data[field]}'")
+            value = data[field]
+            if value is None:
+                set_clauses.append(f"{field} = NULL")
+            else:
+                set_clauses.append(f"{field} = '{value}'")
 
     if not set_clauses:
         return jsonify({"error": "Nenhum handle informado"}), 400
@@ -194,6 +198,7 @@ def update_brand_handles(brand_id):
     """
     database.exec(query)
     return jsonify({"status": "handles updated", "brand_id": brand_id}), 200
+
 
 # ---------------- SOCIAL POST CONTROLLER ---------------- #
 @app.route("/posts/<network>/<handle>", methods=["GET"])
